@@ -27,7 +27,6 @@ export function AppLayout() {
   const { toggleColorScheme, colorScheme } = useTheme();
 
   const handleLogout = () => {
-    // Clear credentials and navigate to login page
     dispatch(logout());
     navigate('/auth');
   };
@@ -41,14 +40,6 @@ export function AppLayout() {
       }}
       padding="md"
     >
-      {/* <AppShell.Header>
-        <Group h="100%" px="md">
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <Text size="lg" fw={700}>
-            OpenSend Dashboard
-          </Text>
-        </Group>
-      </AppShell.Header> */}
 
       <AppShell.Navbar p="md">
         <AppShell.Section grow>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -6,18 +6,17 @@ import {
   Container,
   Flex,
   Image,
+  Loader,
+  LoadingOverlay,
   Paper,
   PasswordInput,
-  rem,
-  Text,
   TextInput,
-  Title,
   useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
 import { hasLength, isEmail, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { useGetStoreInfoQuery, useLoginMutation } from '../store/services/authApi';
+import { useLoginMutation } from '../store/services/authApi';
 import {
   selectIsAuthenticated,
   setCredentials,
@@ -39,8 +38,8 @@ const IconMail = () => {
         fill="#BABDCC"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M6.17538 8.43441C6.4878 7.97898 7.11027 7.86305 7.56569 8.17548L11.4343 10.8293C11.7752 11.0632 12.2248 11.0632 12.5657 10.8294L16.4343 8.17548C16.8897 7.86305 17.5122 7.97898 17.8246 8.43441C18.137 8.88983 18.0211 9.51229 17.5657 9.82471L13.6971 12.4786C12.6744 13.1801 11.3256 13.1801 10.3029 12.4786L6.43431 9.82471C5.97889 9.51229 5.86296 8.88983 6.17538 8.43441Z"
         fill="black"
       />
@@ -67,8 +66,8 @@ const IconLock = () => {
         fill="#1C1C1C"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M5.33301 4.00001C5.33301 2.52725 6.52692 1.33334 7.99967 1.33334C9.47243 1.33334 10.6663 2.52725 10.6663 4.00001V6.00001H9.33301V4.00001C9.33301 3.26363 8.73605 2.66668 7.99967 2.66668C7.26329 2.66668 6.66634 3.26363 6.66634 4.00001V6.00001H5.33301V4.00001Z"
         fill="#1C1C1C"
       />
@@ -79,16 +78,17 @@ const IconLock = () => {
 export function AuthPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const [login, { isLoading, error }] = useLoginMutation();
+  const [login, { error }] = useLoginMutation();
   // const [errorMessage, setErrorMessage] = useState('');
   const { colorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
 
   const form = useForm({
     initialValues: {
-      email:  'test+admin@yopmail.com',
-      password:  '12345678'
+      email: 'test+admin@yopmail.com',
+      password: '12345678',
     },
     validate: {
       email: isEmail('Please enter a valid email'),
@@ -136,66 +136,62 @@ export function AuthPage() {
     }
   }, [error, form]);
 
+  const handleFetchStoreInfo = async (
+    storeId: string,
+    accessToken: string,
+    clientToken: string
+  ) => {
+    try {
+      // Fetch store info and wait for the response
+      const response = await fetch(`https://stgapp-bwgkn3md.opensend.com/store/${storeId}`, {
+        headers: {
+          'Access-Token': `Bearer ${accessToken}`,
+          'Client-Token': clientToken,
+        },
+      });
+
+      if (response.ok) {
+        const storeInfo = await response.json();
+        const onboardingStatus = storeInfo?.store?.onboarding_procedure?.onboarding_status;
+        dispatch(setOnboardingStatus(onboardingStatus));
+
+        // Only redirect after we have the onboarding status
+        const targetRoute = onboardingStatus !== 'DONE' ? '/onboard' : '/dashboard';
+        navigate(targetRoute);
+      }
+      return false;
+    } catch (storeError) {
+      notifications.show({
+        title: 'Store Info Error',
+        message: 'Could not fetch store information, redirecting to dashboard',
+        color: 'yellow',
+      });
+    }
+  };
+
   const handleSubmit = async (values: { email: string; password: string }) => {
     try {
-      // setErrorMessage('');
+      setIsLoading(true);
       const result = await login(values).unwrap();
-      console.log('result--->', result)
       const updateCredentials = {
         user: result.user,
         accessToken: result.tokens.accessToken,
         clientToken: result.tokens.clientToken,
         isAuthenticated: true,
-        view: result.view
-      }
+        view: result.view,
+        accesses: result.accesses,
+      };
       dispatch(setCredentials(updateCredentials));
-
-      // Handle routing based on user role
       if (result.view.type === 'ADMIN') {
         navigate('/admin');
-      } else if (result.view.type === 'CLIENT') {
-        if (result.accesses && result.accesses.length > 0) {
-          const storeId = result.accesses[0].store_id;
-          try {
-            // Fetch store info to check onboarding status
-            const response = await fetch(`https://stgapp-bwgkn3md.opensend.com/store/${storeId}`, {
-              headers: {
-                'Access-Token': `Bearer ${result.tokens.accessToken}`,
-                'Client-Token': result.tokens.clientToken,
-              },
-            });
+      } else if (result.view.type === 'CLIENT' && result.accesses && result.accesses.length > 0) {
+        const storeId = result.accesses[0].store_id;
+        const accessToken = result.tokens.accessToken;
+        const clientToken = result.tokens.clientToken;
+        // For client users, we must wait for store info before redirecting
+        await handleFetchStoreInfo(storeId, accessToken, clientToken);
 
-            if (response.ok) {
-              const storeInfo = await response.json();
-              const onboardingStatus = storeInfo.onboarding_procedure.onboarding_status;
-              // Save onboarding status to state
-              dispatch(setOnboardingStatus(onboardingStatus));
-
-              // Redirect based on onboarding status
-              if (onboardingStatus !== 'DONE') {
-                navigate('/onboard');
-              } else {
-                navigate('/dashboard');
-              }
-            } else {
-              // If we can't get store info, default to dashboard
-              navigate('/dashboard');
-            }
-          } catch (storeError) {
-            console.log('checking-streo', storeError)
-            notifications.show({
-              title: 'Store Info Error',
-              message: 'Could not fetch store information, redirecting to dashboard',
-              color: 'yellow',
-            });
-            navigate('/dashboard');
-          }
-        } else {
-          // No store access, default to dashboard
-          navigate('/dashboard');
-        }
       } else {
-        // Default fallback
         navigate('/dashboard');
       }
     } catch (err) {
@@ -204,12 +200,14 @@ export function AuthPage() {
         message: 'Failed to connect to the server',
         color: 'red',
       });
-      // Error is handled in the useEffect above
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <Flex flex={1} h="100vh" align="center" justify="center" bg="#EAEBEA">
+    <Flex flex={1} h="100vh" align="center" justify="center" bg="#EAEBEA" pos="relative">
+      <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
       <Container w={420} my={40}>
         <Flex justify="center" mb="md">
           <Image
@@ -218,9 +216,7 @@ export function AuthPage() {
           />
         </Flex>
         <Paper radius="md" p="xl" withBorder shadow="md">
-          <div
-            className="text-center font-darker-grotesque font-semibold text-[rgb(43,43,43)] text-[28px] mb-3"
-          >
+          <div className="text-center font-darker-grotesque font-semibold text-[rgb(43,43,43)] text-[28px] mb-3">
             Welcome back!
           </div>
 
@@ -229,11 +225,12 @@ export function AuthPage() {
           </div>
 
           <form onSubmit={form.onSubmit(handleSubmit)} className="flex flex-col gap-[20px]">
+            {/* Disable form inputs during loading */}
             <TextInput
-              // label="Email"
               placeholder="Email address"
               className="input-login"
               required
+              disabled={isLoading}
               leftSection={<IconMail />}
               {...form.getInputProps('email')}
             />
@@ -242,6 +239,7 @@ export function AuthPage() {
               placeholder="Password"
               className="input-login"
               required
+              disabled={isLoading}
               leftSection={<IconLock />}
               {...form.getInputProps('password')}
             />
@@ -263,7 +261,9 @@ export function AuthPage() {
                 type="button"
                 onClick={() => navigate('/auth')}
               >
-                <div className="font-semibold text-[16px] font-darker-grotesque">Forgot Your Password?</div>
+                <div className="font-semibold text-[16px] font-darker-grotesque">
+                  Forgot Your Password?
+                </div>
               </Button>
             </Flex>
           </form>

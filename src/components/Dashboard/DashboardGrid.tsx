@@ -6,10 +6,13 @@ import 'react-resizable/css/styles.css';
 
 import { IconPlus } from '@tabler/icons-react';
 import { useSelector } from 'react-redux';
-import { Box, Button, Group, Modal, Text, Textarea, TextInput } from '@mantine/core';
+import { Box, Button } from '@mantine/core';
 import { VIEW_TYPE } from '../../store/services/authApi';
 import { selectViewType } from '../../store/slices/authSlice';
 import { MetricWidget } from './MetricWidget';
+import { AddMetricModal } from './AddMetricModal';
+import { ConfigureWidgetModal } from './ConfigureWidgetModal';
+import { WidgetIconBox } from './WidgetIconBox';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -42,7 +45,7 @@ export function DashboardGrid({ initialWidgets = [] }: DashboardGridProps) {
   const [layouts, setLayouts] = useState<{ [key: string]: LayoutItem[] }>({});
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
-  const [selectedWidgetType, setSelectedWidgetType] = useState<string | null>(null);
+  const [selectedWidgetType, setSelectedWidgetType] = useState<'identities' | 'iterable' | 'yotpo' | null>(null);
   const [newWidgetTitle, setNewWidgetTitle] = useState('');
   const [newWidgetDescription, setNewWidgetDescription] = useState('');
   const viewType = useSelector(selectViewType);
@@ -103,7 +106,7 @@ export function DashboardGrid({ initialWidgets = [] }: DashboardGridProps) {
     setIsAddModalOpen(true);
   };
 
-  const handleWidgetTypeSelect = (type: string) => {
+  const handleWidgetTypeSelect = (type: 'identities' | 'iterable' | 'yotpo') => {
     setSelectedWidgetType(type);
     setIsAddModalOpen(false);
     setIsConfigModalOpen(true);
@@ -173,47 +176,17 @@ export function DashboardGrid({ initialWidgets = [] }: DashboardGridProps) {
     switch (widget.type) {
       case 'identities':
         icon = (
-          <Box
-            style={{
-              background: '#e7f5e7',
-              color: '#4caf50',
-              borderRadius: '4px',
-              padding: '8px',
-              fontSize: '24px',
-            }}
-          >
-            Aa
-          </Box>
+          <WidgetIconBox widgetType="identities" />
         );
         break;
       case 'iterable':
         icon = (
-          <Box
-            style={{
-              background: '#e3f2fd',
-              color: '#2196f3',
-              borderRadius: '4px',
-              padding: '8px',
-              fontSize: '24px',
-            }}
-          >
-            Aa
-          </Box>
+          <WidgetIconBox widgetType="iterable" />
         );
         break;
       case 'yotpo':
         icon = (
-          <Box
-            style={{
-              background: '#fff8e1',
-              color: '#ffc107',
-              borderRadius: '4px',
-              padding: '8px',
-              fontSize: '24px',
-            }}
-          >
-            Aa
-          </Box>
+          <WidgetIconBox widgetType="yotpo" />
         );
         break;
       default:
@@ -264,223 +237,27 @@ export function DashboardGrid({ initialWidgets = [] }: DashboardGridProps) {
       </ResponsiveGridLayout>
 
       {/* Add Widget Modal */}
-      <Modal
+      <AddMetricModal
         opened={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        title="Add a metric"
-        centered
-        size="lg"
-      >
-        <Text mb="md">Select a widget type to add to the overview page.</Text>
-
-        <Box mb="xl">
-          <Text fw={600} mb="md">
-            Overview
-          </Text>
-          <Group justify="center" gap="lg">
-            <Box
-              p="lg"
-              style={(theme: any) => ({
-                border: `1px solid ${theme.colors.gray[3]}`,
-                borderRadius: theme.radius.md,
-                cursor: 'pointer',
-                '&:hover': {
-                  borderColor: theme.colors.green[6],
-                },
-                width: 180,
-                textAlign: 'center',
-              })}
-              onClick={() => handleWidgetTypeSelect('identities')}
-            >
-              <Box
-                mb="sm"
-                mx="auto"
-                style={{
-                  width: 60,
-                  height: 60,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid #ddd',
-                  borderRadius: 4,
-                  fontSize: 24,
-                }}
-              >
-                Aa
-              </Box>
-              <Text>Identities Provided</Text>
-            </Box>
-
-            <Box
-              p="lg"
-              style={(theme: any) => ({
-                border: `1px solid ${theme.colors.gray[3]}`,
-                borderRadius: theme.radius.md,
-                cursor: 'pointer',
-                '&:hover': {
-                  borderColor: theme.colors.blue[6],
-                },
-                width: 180,
-                textAlign: 'center',
-              })}
-              onClick={() => handleWidgetTypeSelect('iterable')}
-            >
-              <Box
-                mb="sm"
-                mx="auto"
-                style={{
-                  width: 60,
-                  height: 60,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid #ddd',
-                  borderRadius: 4,
-                  fontSize: 24,
-                }}
-              >
-                Aa
-              </Box>
-              <Text>Iterable Metric</Text>
-            </Box>
-
-            <Box
-              p="lg"
-              style={(theme: any) => ({
-                border: `1px solid ${theme.colors.gray[3]}`,
-                borderRadius: theme.radius.md,
-                cursor: 'pointer',
-                '&:hover': {
-                  borderColor: theme.colors.yellow[6],
-                },
-                width: 180,
-                textAlign: 'center',
-              })}
-              onClick={() => handleWidgetTypeSelect('yotpo')}
-            >
-              <Box
-                mb="sm"
-                mx="auto"
-                style={{
-                  width: 60,
-                  height: 60,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid #ddd',
-                  borderRadius: 4,
-                  fontSize: 24,
-                }}
-              >
-                Aa
-              </Box>
-              <Text>Yotpo Metric</Text>
-            </Box>
-          </Group>
-        </Box>
-
-        <Group justify="flex-end">
-          <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
-            Cancel
-          </Button>
-          <Button color="green">Next</Button>
-        </Group>
-      </Modal>
+        onWidgetTypeSelect={handleWidgetTypeSelect}
+      />
 
       {/* Configure Widget Modal */}
-      <Modal
+      <ConfigureWidgetModal
         opened={isConfigModalOpen}
         onClose={() => setIsConfigModalOpen(false)}
-        title="Configure widget"
-        centered
-        size="lg"
-      >
-        <Text mb="md">Add a title and select data to display on the overview page.</Text>
-
-        <Group grow mb="md">
-          <Box p="md" style={{ border: '1px solid #eee', borderRadius: 4 }}>
-            <Box mb="sm" style={{ display: 'flex', alignItems: 'center' }}>
-              <Box
-                mr="xs"
-                style={{
-                  background:
-                    selectedWidgetType === 'identities'
-                      ? '#e7f5e7'
-                      : selectedWidgetType === 'iterable'
-                        ? '#e3f2fd'
-                        : '#fff8e1',
-                  color:
-                    selectedWidgetType === 'identities'
-                      ? '#4caf50'
-                      : selectedWidgetType === 'iterable'
-                        ? '#2196f3'
-                        : '#ffc107',
-                  borderRadius: 4,
-                  width: 24,
-                  height: 24,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 14,
-                }}
-              >
-                A
-              </Box>
-              <Text fw={600} tt="uppercase">
-                {selectedWidgetType === 'identities'
-                  ? 'IDENTITIES PROVIDED'
-                  : selectedWidgetType === 'iterable'
-                    ? 'OPENED MESSAGE'
-                    : 'CLICKED'}
-              </Text>
-            </Box>
-            <Text size="xl" fw={700} mb="xs">
-              0
-            </Text>
-            <Text size="sm" c="dimmed">
-              {newWidgetDescription}
-            </Text>
-          </Box>
-
-          <Box>
-            <Text mb="xs" fw={600}>
-              Widget type
-            </Text>
-            <Text mb="lg">
-              {selectedWidgetType === 'identities'
-                ? 'Identities Provided - TEXT'
-                : selectedWidgetType === 'iterable'
-                  ? 'Iterable Metric - TEXT'
-                  : 'Yotpo Metric - TEXT'}
-            </Text>
-
-            <TextInput
-              label="Title"
-              required
-              value={newWidgetTitle}
-              onChange={(e) => setNewWidgetTitle(e.target.value)}
-              mb="md"
-            />
-
-            <Textarea
-              label="Description"
-              required
-              value={newWidgetDescription}
-              onChange={(e) => setNewWidgetDescription(e.target.value)}
-              minRows={3}
-            />
-          </Box>
-        </Group>
-
-        <Group justify="flex-end">
-          <Button variant="outline" onClick={() => setIsConfigModalOpen(false)}>
-            Back
-          </Button>
-          <Button color="green" onClick={handleSaveNewWidget}>
-            Add
-          </Button>
-        </Group>
-      </Modal>
+        onBack={() => {
+          setIsConfigModalOpen(false);
+          setIsAddModalOpen(true);
+        }}
+        onSave={handleSaveNewWidget}
+        selectedWidgetType={selectedWidgetType}
+        newWidgetTitle={newWidgetTitle}
+        newWidgetDescription={newWidgetDescription}
+        onTitleChange={(value) => setNewWidgetTitle(value)}
+        onDescriptionChange={(value) => setNewWidgetDescription(value)}
+      />
     </Box>
   );
 }

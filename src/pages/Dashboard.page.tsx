@@ -28,6 +28,7 @@ const initialWidgets: Widget[] = [
 ];
 
 export function DashboardPage() {
+  console.log('checking--->')
   return (
     <Container size="xl" py="xl">
       <Box mb="xl">

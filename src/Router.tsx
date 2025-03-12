@@ -1,13 +1,10 @@
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
-import { AuthPage } from './pages/Auth.page';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import { AppLayout } from './components/Layout/AppLayout';
+import { AdminRoute, ClientRoute } from './components/ProtectedRoute/ProtectedRoute';
 import { AdminPage } from './pages/Admin.page';
+import { AuthPage } from './pages/Auth.page';
 import { DashboardPage } from './pages/Dashboard.page';
 import { OnboardPage } from './pages/Onboard.page';
-import { 
-  AdminRoute, 
-  ClientRoute 
-} from './components/ProtectedRoute/ProtectedRoute';
-import { AppLayout } from './components/Layout/AppLayout';
 
 const router = createBrowserRouter([
   {
@@ -18,7 +15,6 @@ const router = createBrowserRouter([
     path: '/auth',
     element: <AuthPage />,
   },
-  // Admin routes
   {
     element: <AdminRoute />,
     children: [
@@ -33,7 +29,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-  // Client routes with onboarding check
   {
     element: <ClientRoute />,
     children: [
@@ -41,12 +36,12 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           {
-            path: '/dashboard',
-            element: <DashboardPage />,
-          },
-          {
             path: '/onboard',
             element: <OnboardPage />,
+          },
+          {
+            path: '/dashboard',
+            element: <DashboardPage />,
           },
         ],
       },
@@ -56,7 +51,7 @@ const router = createBrowserRouter([
   {
     path: '*',
     element: <Navigate to="/" replace />,
-  }
+  },
 ]);
 
 export function Router() {

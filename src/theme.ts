@@ -16,9 +16,5 @@ export const theme = createTheme({
       ],
     },
     primaryColor: 'brand',
-    fontFamily: '"Darker Grotesque", sans-serif',
-    headings: {
-      fontFamily: '"Darker Grotesque", sans-serif',
-      fontWeight: '600',
-    },
+  /** Put your mantine theme override here */
 });
