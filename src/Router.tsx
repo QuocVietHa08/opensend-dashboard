@@ -7,6 +7,7 @@ import {
   AdminRoute, 
   ClientRoute 
 } from './components/ProtectedRoute/ProtectedRoute';
+import { AppLayout } from './components/Layout/AppLayout';
 
 const router = createBrowserRouter([
   {
@@ -22,8 +23,13 @@ const router = createBrowserRouter([
     element: <AdminRoute />,
     children: [
       {
-        path: '/admin',
-        element: <AdminPage />,
+        element: <AppLayout />,
+        children: [
+          {
+            path: '/admin',
+            element: <AdminPage />,
+          },
+        ],
       },
     ],
   },
@@ -32,12 +38,17 @@ const router = createBrowserRouter([
     element: <ClientRoute />,
     children: [
       {
-        path: '/dashboard',
-        element: <DashboardPage />,
-      },
-      {
-        path: '/onboard',
-        element: <OnboardPage />,
+        element: <AppLayout />,
+        children: [
+          {
+            path: '/dashboard',
+            element: <DashboardPage />,
+          },
+          {
+            path: '/onboard',
+            element: <OnboardPage />,
+          },
+        ],
       },
     ],
   },

@@ -36,30 +36,33 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials: (state, action: PayloadAction<{ 
-      user: User; 
-      access_token: string; 
-      client_token: string;
-      view: { type: string };
-      accesses?: Array<{ store_id: string; role: string }>;
-    }>) => {
-      const { user, access_token, client_token, view, accesses } = action.payload;
+    setCredentials: (
+      state,
+      action: PayloadAction<{
+        user: User;
+        accessToken: string;
+        clientToken: string;
+        view: { type: string };
+        accesses?: Array<{ store_id: string; role: string }>;
+      }>
+    ) => {
+      const { user, accessToken, clientToken, view, accesses } = action.payload;
       state.user = user;
-      state.accessToken = access_token;
-      state.clientToken = client_token;
+      state.accessToken = accessToken;
+      state.clientToken = clientToken;
       state.viewType = view.type;
       state.isAuthenticated = true;
-      
+
       // Store the store ID if available (for CLIENT type)
       if (accesses && accesses.length > 0) {
         state.storeId = accesses[0].store_id;
       }
-      
+
       // Save to localStorage for persistence
-      localStorage.setItem('accessToken', access_token);
-      localStorage.setItem('clientToken', client_token);
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('clientToken', clientToken);
       localStorage.setItem('viewType', view.type);
-      
+
       if (accesses && accesses.length > 0) {
         localStorage.setItem('storeId', accesses[0].store_id);
       }
@@ -76,7 +79,7 @@ const authSlice = createSlice({
       state.storeId = null;
       state.onboardingStatus = null;
       state.isAuthenticated = false;
-      
+
       // Clear localStorage
       localStorage.removeItem('accessToken');
       localStorage.removeItem('clientToken');

@@ -12,8 +12,10 @@ interface LoginResponse {
     email: string;
     name?: string;
   };
-  access_token: string;
-  client_token: string;
+  tokens: {
+    accessToken: string;
+    clientToken: string;
+  };
   view: {
     type: string;
   };
@@ -58,7 +60,6 @@ export const authApi = createApi({
       const state = getState() as RootState;
       const accessToken = state.auth.accessToken;
       const clientToken = state.auth.clientToken;
-
       // Add tokens to headers if they exist
       if (accessToken) {
         headers.set('Access-Token', `Bearer ${accessToken}`);
