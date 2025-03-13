@@ -54,7 +54,7 @@ export const ONBOARDING_STATUS = {
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://stgapp-bwgkn3md.opensend.com',
+    baseUrl: process.env.REACT_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
       // Get the tokens from the auth state
       const state = getState() as RootState;

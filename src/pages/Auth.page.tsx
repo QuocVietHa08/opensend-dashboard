@@ -81,7 +81,6 @@ export function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [login, { error }] = useLoginMutation();
-  // const [errorMessage, setErrorMessage] = useState('');
   const { colorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
 
@@ -96,14 +95,12 @@ export function AuthPage() {
     },
   });
 
-  // Redirect to dashboard if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/dashboard');
     }
   }, [isAuthenticated, navigate]);
 
-  // Process API error messages
   useEffect(() => {
     if (error) {
       if ('data' in error) {
@@ -151,7 +148,6 @@ export function AuthPage() {
       });
 
       if (response.ok) {
-        console.log('cehcking--->', response)
         const storeInfo = await response.json();
         const onboardingStatus = storeInfo?.store?.onboarding_procedure?.onboarding_status;
         dispatch(setOnboardingStatus(onboardingStatus));
@@ -174,7 +170,15 @@ export function AuthPage() {
   const handleSubmit = async (values: { email: string; password: string }) => {
     try {
       setIsLoading(true);
-      const result = await login(values).unwrap();
+      const result = await login(values).unwrap().then(async (res) => {
+        if (res.view.type === 'CLIENT' && res.accesses && res.accesses.length > 0) {
+        const storeId = res?.accesses[0].store_id;
+        const accessToken = res.tokens.accessToken;
+        const clientToken = res.tokens.clientToken;
+        await handleFetchStoreInfo(storeId, accessToken, clientToken);
+        }
+        return res;
+      })
       const updateCredentials = {
         user: result.user,
         accessToken: result.tokens.accessToken,
@@ -184,18 +188,6 @@ export function AuthPage() {
         accesses: result.accesses,
       };
       dispatch(setCredentials(updateCredentials));
-      if (result.view.type === 'ADMIN') {
-        navigate('/admin');
-      } else if (result.view.type === 'CLIENT' && result.accesses && result.accesses.length > 0) {
-        const storeId = result.accesses[0].store_id;
-        const accessToken = result.tokens.accessToken;
-        const clientToken = result.tokens.clientToken;
-        // For client users, we must wait for store info before redirecting
-        await handleFetchStoreInfo(storeId, accessToken, clientToken);
-
-      } else {
-        navigate('/dashboard');
-      }
     } catch (err) {
       notifications.show({
         title: 'Login Failed',
@@ -227,7 +219,6 @@ export function AuthPage() {
           </div>
 
           <form onSubmit={form.onSubmit(handleSubmit)} className="flex flex-col gap-[20px]">
-            {/* Disable form inputs during loading */}
             <TextInput
               placeholder="Email address"
               className="input-login"
