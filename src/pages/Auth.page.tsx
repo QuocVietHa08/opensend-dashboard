@@ -20,6 +20,7 @@ import { useLoginMutation } from '../store/services/authApi';
 import {
   selectIsAuthenticated,
   setCredentials,
+  setIsAuthenticated,
   setOnboardingStatus,
 } from '../store/slices/authSlice';
 
@@ -151,9 +152,11 @@ export function AuthPage() {
       });
 
       if (response.ok) {
+        console.log('cehcking--->', response)
         const storeInfo = await response.json();
         const onboardingStatus = storeInfo?.store?.onboarding_procedure?.onboarding_status;
         dispatch(setOnboardingStatus(onboardingStatus));
+        dispatch(setIsAuthenticated(true))
 
         // Only redirect after we have the onboarding status
         const targetRoute = onboardingStatus !== 'DONE' ? '/onboard' : '/dashboard';
@@ -177,7 +180,7 @@ export function AuthPage() {
         user: result.user,
         accessToken: result.tokens.accessToken,
         clientToken: result.tokens.clientToken,
-        isAuthenticated: true,
+        isAuthenticated: false,
         view: result.view,
         accesses: result.accesses,
       };

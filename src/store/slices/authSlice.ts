@@ -67,6 +67,9 @@ const authSlice = createSlice({
         localStorage.setItem('storeId', accesses[0].store_id);
       }
     },
+    setIsAuthenticated: (state, action: PayloadAction<boolean>) => {
+      state.isAuthenticated = action.payload;
+    },
     setOnboardingStatus: (state, action: PayloadAction<string>) => {
       state.onboardingStatus = action.payload;
       localStorage.setItem('onboardingStatus', action.payload);
@@ -90,7 +93,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, setOnboardingStatus, logout } = authSlice.actions;
+export const { setCredentials, setOnboardingStatus, logout, setIsAuthenticated } = authSlice.actions;
 
 export const selectCurrentUser = (state: RootState) => state.auth.user;
 export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated;
