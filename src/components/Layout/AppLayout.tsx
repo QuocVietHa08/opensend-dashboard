@@ -92,7 +92,7 @@ export function AppLayout() {
           }
           onClick={toggleColorScheme}
           rightSection={
-            <Switch checked={colorScheme === 'dark'} onChange={toggleColorScheme} size="sm" />
+            <Switch checked={colorScheme === 'dark'} color='#288364' onChange={toggleColorScheme} size="sm" />
           }
         >
           {colorScheme === 'dark' ? 'Light mode' : 'Dark mode'}

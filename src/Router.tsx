@@ -5,6 +5,7 @@ import { AdminPage } from './pages/Admin.page';
 import { AuthPage } from './pages/Auth.page';
 import { DashboardPage } from './pages/Dashboard.page';
 import { OnboardPage } from './pages/Onboard.page';
+import { NotFoundPage } from './pages/NotFound.page';
 
 const router = createBrowserRouter([
   {
@@ -47,10 +48,10 @@ const router = createBrowserRouter([
       },
     ],
   },
-  // Fallback for any other routes
+  // 404 Page for any other routes
   {
     path: '*',
-    element: <Navigate to="/" replace />,
+    element: <NotFoundPage />,
   },
 ]);
 

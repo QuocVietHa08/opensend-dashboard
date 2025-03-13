@@ -36,6 +36,7 @@ export const componentTheme = {
   },
   Input: {
     ...generalProps,
+    color: '#298565',
   },
   TextInput: {
     ...generalProps,

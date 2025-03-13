@@ -80,7 +80,7 @@ export function AuthPage() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const [login, { error }] = useLoginMutation();
+  const [login] = useLoginMutation();
   const { colorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
 
@@ -101,37 +101,38 @@ export function AuthPage() {
     }
   }, [isAuthenticated, navigate]);
 
-  useEffect(() => {
-    if (error) {
-      if ('data' in error) {
-        const errorData = error.data as any;
-        if (errorData?.message) {
-          // Check if the error is related to the email field
-          if (errorData.message.includes('email')) {
-            form.setFieldError('email', errorData.message);
-          } else {
-            notifications.show({
-              title: 'Login Failed',
-              message: errorData.message,
-              color: 'red',
-            });
-          }
-        } else {
-          notifications.show({
-            title: 'Login Failed',
-            message: 'An error occurred during login',
-            color: 'red',
-          });
-        }
-      } else {
-        notifications.show({
-          title: 'Login Failed',
-          message: 'Failed to connect to the server',
-          color: 'red',
-        });
-      }
-    }
-  }, [error, form]);
+  // useEffect(() => {
+  //   if (error) {
+  //     if ('data' in error) {
+  //       const errorData = error.data as any;
+  //       if (errorData?.message) {
+  //         // Check if the error is related to the email field
+  //         if (errorData.message.includes('email')) {
+  //           console.log('cehcking', errorData.message)
+  //           form.setFieldError('email', errorData.message);
+  //         } else {
+  //           notifications.show({
+  //             title: 'Login Failed',
+  //             message: errorData.message,
+  //             color: 'red',
+  //           });
+  //         }
+  //       } else {
+  //         notifications.show({
+  //           title: 'Login Failed',
+  //           message: 'An error occurred during login',
+  //           color: 'red',
+  //         });
+  //       }
+  //     } else {
+  //       notifications.show({
+  //         title: 'Login Failed',
+  //         message: 'Failed to connect to the server',
+  //         color: 'red',
+  //       });
+  //     }
+  //   }
+  // }, [error, form]);
 
   const handleFetchStoreInfo = async (
     storeId: string,
@@ -178,6 +179,21 @@ export function AuthPage() {
         await handleFetchStoreInfo(storeId, accessToken, clientToken);
         }
         return res;
+      }).catch((error) => {
+        const errorData = error.data as any;
+        if (errorData?.message) {
+          // Check if the error is related to the email field
+          if (errorData.message.includes('email')) {
+            form.setFieldError('email', errorData.message);
+          } else {
+            notifications.show({
+              title: 'Login Failed',
+              message: errorData.message,
+              color: 'red',
+            });
+          }
+        }
+        return error
       })
       const updateCredentials = {
         user: result.user,
@@ -230,6 +246,12 @@ export function AuthPage() {
                   color: colorScheme === 'dark' ? '#C1C2C5' : undefined,
                   backgroundColor: colorScheme === 'dark' ? '#1A1B1E' : undefined,
                   borderColor: colorScheme === 'dark' ? '#373A40' : undefined,
+                  '&:focus': {
+                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
+                  },
+                  '&:active': {
+                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
+                  },
                 }
               }}
               {...form.getInputProps('email')}
@@ -245,7 +267,13 @@ export function AuthPage() {
                 input: {
                   backgroundColor: colorScheme === 'dark' ? '#1A1B1E' : undefined,
                   borderColor: colorScheme === 'dark' ? '#373A40' : undefined,
-                  color: colorScheme === 'dark' ? '#C1C2C5' : undefined
+                  color: colorScheme === 'dark' ? '#C1C2C5' : undefined,
+                  '&:focus': {
+                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
+                  },
+                  '&:active': {
+                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
+                  },
                 }
               }}
               {...form.getInputProps('password')}
