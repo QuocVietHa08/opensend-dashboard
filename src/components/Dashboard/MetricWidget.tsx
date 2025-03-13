@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { Paper, Text, Title, ActionIcon, Flex, Box } from '@mantine/core';
-import { IconEdit, IconCheck } from '@tabler/icons-react';
+import { Paper, Text, ActionIcon, Flex, Box, Group } from '@mantine/core';
+import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { useSelector } from 'react-redux';
 import { selectViewType } from '../../store/slices/authSlice';
 import { VIEW_TYPE } from '../../store/services/authApi';
+import { theme } from '@/theme';
 
 interface MetricWidgetProps {
   id: string;
@@ -11,20 +11,17 @@ interface MetricWidgetProps {
   description: string;
   value: string | number;
   icon: React.ReactNode;
-  onEdit: (id: string, title: string, description: string) => void;
+  onEdit: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 export function MetricWidget({
   id,
   title,
   description,
-  value,
-  icon,
   onEdit,
+  onDelete,
 }: MetricWidgetProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(title);
-  const [editDescription, setEditDescription] = useState(description);
   const viewType = useSelector(selectViewType);
   const isAdmin = viewType === VIEW_TYPE.ADMIN;
 
@@ -32,12 +29,14 @@ export function MetricWidget({
     if (!isAdmin) {
       return;
     }
-    setIsEditing(true);
+    onEdit(id);
   };
 
-  const handleSaveClick = () => {
-    onEdit(id, editTitle, editDescription);
-    setIsEditing(false);
+  const handleDeleteClick = () => {
+    if (!isAdmin || !onDelete) {
+      return;
+    }
+    onDelete(id);
   };
 
   return (
@@ -49,47 +48,42 @@ export function MetricWidget({
       style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
     >
       <Flex justify="space-between" align="center" mb="xs">
-        {isEditing ? (
-          <input
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-            style={{ width: '70%', padding: '4px' }}
-          />
-        ) : (
-          <Title order={4}>{title}</Title>
-        )}
+        <div className="text-[18px] font-darker-grotesque font-bold">{title}</div>
         {isAdmin && (
-          <ActionIcon
-            onClick={isEditing ? handleSaveClick : handleEditClick}
-            variant="subtle"
-            color="blue"
-          >
-            {isEditing ? <IconCheck size={16} /> : <IconEdit size={16} />}
-          </ActionIcon>
+          <Group gap={5} className="no-drag">
+            <ActionIcon
+              onClick={(e) => {
+                // Prevent the click from triggering drag events
+                e.stopPropagation();
+                handleEditClick();
+              }}
+              variant="subtle"
+              color={theme.colors?.myColor?.[9] || '#288364'}
+              className="no-drag"
+            >
+              <IconEdit size={16} />
+            </ActionIcon>
+            {onDelete && (
+              <ActionIcon
+                onClick={(e) => {
+                  // Prevent the click from triggering drag events
+                  e.stopPropagation();
+                  handleDeleteClick();
+                }}
+                variant="subtle"
+                color="red"
+                className="no-drag"
+              >
+                <IconTrash size={16} />
+              </ActionIcon>
+            )}
+          </Group>
         )}
       </Flex>
 
-      {isEditing ? (
-        <textarea
-          value={editDescription}
-          onChange={(e) => setEditDescription(e.target.value)}
-          style={{ width: '100%', marginBottom: '10px', minHeight: '60px' }}
-        />
-      ) : (
-        <Text size="sm" color="dimmed" mb="md">
-          {description}
-        </Text>
-      )}
-
-      <Flex
-        direction="column"
-        align="center"
-        justify="center"
-        style={{ flex: 1 }}
-      >
-        <Box mb="xs">{icon}</Box>
-        <Title order={2}>{value}</Title>
-      </Flex>
+      <Text size="sm" color="dimmed" mb="md">
+        {description}
+      </Text>
     </Paper>
   );
 }

@@ -1,20 +1,95 @@
-import { createTheme } from '@mantine/core';
+import { createTheme, MantineColorsTuple } from '@mantine/core';
+
+const generalProps = {
+  defaultProps: {
+    radius: 'sm',
+  },
+}
+
+const myColor: MantineColorsTuple = [
+  '#effaf7',
+  '#e0f2ec',
+  '#bce6d7',
+  '#95d9c1',
+  '#75ceae',
+  '#61c7a2',
+  '#55c49b',
+  '#46ac87',
+  '#3a9977',
+  '#298565'
+];
+
+
+export const componentTheme = {
+  Modal: {
+    ...generalProps,
+  },
+  Icon: {
+    ...generalProps,
+  },
+  Image: {
+    ...generalProps,
+  },
+  Button: {
+    ...generalProps,
+    variant: 'light',
+  },
+  Input: {
+    ...generalProps,
+  },
+  TextInput: {
+    ...generalProps,
+  },
+  Textarea: {
+    ...generalProps,
+  },
+  NumberInput: {
+    ...generalProps,
+  },
+  MultiSelect: {
+    ...generalProps,
+  },
+  Select: {
+    ...generalProps,
+  },
+  Divider: {
+    defaultProps: {
+      color: 'gray.3',
+    },
+  },
+  Table: {
+    defaultProps: {
+      striped: true,
+      highlightOnHover: true,
+      withTableBorder: true,
+    },
+  },
+  Badge: {
+    defaultProps: {
+      style: {
+        letterSpacing: '0.5px',
+      },
+    },
+  },
+  Tooltip: {
+    defaultProps: {
+      color: 'white',
+      c: 'black',
+    },
+  },
+  Title: {
+    styles: {
+      root: {
+        fontWeight: 600,
+      },
+    },
+  },
+}
 
 export const theme = createTheme({
-    colors: {
-      brand: [
-        '#f0f4f8', // Lightest
-        '#d9e2ec',
-        '#bcccdc',
-        '#9fb3c8',
-        '#829ab1',
-        '#627d98', // Base color
-        '#486581',
-        '#334e68',
-        '#243b53',
-        '#102a43', // Darkest
-      ],
-    },
-    primaryColor: 'brand',
-  /** Put your mantine theme override here */
+  colors: {
+     myColor
+  },
+  components: componentTheme
+
 });

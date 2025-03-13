@@ -1,4 +1,4 @@
-import { Box, Container, Text, Title } from '@mantine/core';
+import { Box,  Flex} from '@mantine/core';
 import { DashboardGrid, Widget } from '../components/Dashboard/DashboardGrid';
 
 // Initial widgets for demonstration
@@ -28,19 +28,18 @@ const initialWidgets: Widget[] = [
 ];
 
 export function DashboardPage() {
-  console.log('checking--->')
   return (
-    <Container size="xl" py="xl">
-      <Box mb="xl">
-        <Title order={2} mb="xs">
+    <Flex direction="column" py="xl" className="" w="100%" h="100%">
+      <Box p="md">
+        <div className="text-[30px] font-bold font-darker-grotesque">
           Dashboard
-        </Title>
-        <Text color="dimmed">
+        </div>
+        <div className="text-[20px] font-weight-500 font-darker-grotesque ">
           View and manage your metrics. Drag and resize widgets to customize your dashboard.
-        </Text>
+        </div>
       </Box>
 
       <DashboardGrid initialWidgets={initialWidgets} />
-    </Container>
+    </Flex>
   );
 }

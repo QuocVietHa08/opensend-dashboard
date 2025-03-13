@@ -18,13 +18,13 @@ export function WidgetIconBox({
   const getColors = () => {
     switch (widgetType) {
       case 'identities':
-        return { background: '#e7f5e7', color: '#4caf50' };
+        return { background: 'lightgray', color: 'gray' };
       case 'iterable':
-        return { background: '#e3f2fd', color: '#2196f3' };
+        return { background: 'lightgray', color: 'gray' };
       case 'yotpo':
-        return { background: '#fff8e1', color: '#ffc107' };
+        return { background: 'lightgray', color: 'gray' };
       default:
-        return { background: '#f5f5f5', color: '#757575' };
+        return { background: 'lightgray', color: 'gray' };
     }
   };
 
@@ -32,12 +32,12 @@ export function WidgetIconBox({
   const getDimensions = () => {
     switch (size) {
       case 'sm':
-        return { width: 24, height: 24, fontSize: 14 };
+        return { width: 28, height: 28, fontSize: 16 };
       case 'lg':
-        return { width: 60, height: 60, fontSize: 24 };
+        return { width: 70, height: 70, fontSize: 28 };
       case 'md':
       default:
-        return { width: 40, height: 40, fontSize: 18 };
+        return { width: 48, height: 48, fontSize: 20 };
     }
   };
 

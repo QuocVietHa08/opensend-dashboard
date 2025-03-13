@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Box, Button, Flex, Modal, Text } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { theme } from '@/theme';
 import { WidgetIconBox } from './WidgetIconBox';
 
 interface AddMetricModalProps {
@@ -8,115 +10,107 @@ interface AddMetricModalProps {
   onWidgetTypeSelect: (type: 'identities' | 'iterable' | 'yotpo') => void;
 }
 
+const OPTIONS: { value: 'identities' | 'iterable' | 'yotpo'; label: string }[] = [
+  { value: 'identities', label: 'Identities Provided' },
+  { value: 'iterable', label: 'Iterable Metric' },
+  { value: 'yotpo', label: 'Yotpo Metric' },
+];
+
 export function AddMetricModal({ opened, onClose, onWidgetTypeSelect }: AddMetricModalProps) {
   const [selectedType, setSelectedType] = useState<'identities' | 'iterable' | 'yotpo' | null>(
     null
   );
+  const isMobile = useMediaQuery('(max-width: 576px)');
+  const isTablet = useMediaQuery('(min-width: 577px) and (max-width: 992px)');
+
+  // Get modal width based on screen size
+  const getModalWidth = () => {
+    if (isMobile) {
+      return '100%';
+    }
+    if (isTablet) {
+      return '720px';
+    }
+    return '900px';
+  };
+
+  const handleClose = () => {
+    onClose();
+    setSelectedType(null);
+  }
   return (
-    <Modal opened={opened} onClose={onClose} centered size="xxl"
-    styles={{
-      header: {
-        backgroundColor: '#fafaf6'
-      },
-      body: {
-        width: '900px',
-        backgroundColor: '#fafaf6'
-      }
-    }}>
-      <Flex justify="center" align="center" direction="column" gap="md">
-        <Text fw="bold">Add a metric</Text>
-        <Text mb="md">Select a widget type to add to the overview page.</Text>
+    <Modal
+      opened={opened}
+      onClose={handleClose}
+      centered
+      size="xxl"
+      styles={{
+        header: {
+          backgroundColor: '#fafaf6',
+        },
+        body: {
+          width: getModalWidth(),
+          backgroundColor: '#fafaf6',
+        },
+        inner: {
+          padding: '16px',
+        },
+      }}
+    >
+      <Flex justify="center" align="center" direction="column" gap="xs" mb="md" px={{ base: 'md', sm: 'xl' }}>
+        <div className="font-darker-grotesque text-[18px] sm:text-[20px] font-bold text-center">Add a metric</div>
+        <div className="text-[11px] sm:text-[12px] text-[#848484] text-center">
+          Select a widget type to add to the overview page.
+        </div>
       </Flex>
 
-      <Box mb="xl">
+      <Box mb="xl" px={{ base: 'md', sm: 'xl' }}>
         <Text fw={600} mb="md">
           Overview
         </Text>
-        <Flex flex={1} justify="center" gap="lg">
-          <Flex
-            flex={1}
-            direction="column"
-            p="lg"
-            style={(theme: any) => ({
-              border:
-                selectedType === 'identities'
-                  ? `2px solid ${theme.colors.green[6]}`
-                  : `1px solid ${theme.colors.gray[3]}`,
-              borderRadius: theme.radius.md,
-              cursor: 'pointer',
-              '&:hover': {
-                borderColor: theme.colors.green[6],
-              },
-              width: 180,
-              textAlign: 'center',
-              background: selectedType === 'identities' ? '#f9fcf9' : 'white',
-            })}
-            onClick={() => setSelectedType('identities')}
-          >
-            <WidgetIconBox widgetType="identities" size="lg" />
-            <Text>Identities Provided</Text>
-          </Flex>
-
-          <Flex
-            flex={1}
-            p="lg"
-            direction="column"
-            style={(theme: any) => ({
-              border:
-                selectedType === 'iterable'
-                  ? `2px solid ${theme.colors.blue[6]}`
-                  : `1px solid ${theme.colors.gray[3]}`,
-              borderRadius: theme.radius.md,
-              cursor: 'pointer',
-              '&:hover': {
-                borderColor: theme.colors.blue[6],
-              },
-              width: 180,
-              textAlign: 'center',
-              background: selectedType === 'iterable' ? '#f5faff' : 'white',
-            })}
-            onClick={() => setSelectedType('iterable')}
-          >
-            <WidgetIconBox widgetType="iterable" size="lg" />
-            <Text>Iterable Metric</Text>
-          </Flex>
-
-          <Flex
-            flex={1}
-            direction="column"
-            p="lg"
-            style={(theme: any) => ({
-              border:
-                selectedType === 'yotpo'
-                  ? `2px solid ${theme.colors.yellow[6]}`
-                  : `1px solid ${theme.colors.gray[3]}`,
-              borderRadius: theme.radius.md,
-              cursor: 'pointer',
-              '&:hover': {
-                borderColor: theme.colors.yellow[6],
-              },
-              width: 180,
-              textAlign: 'center',
-              background: selectedType === 'yotpo' ? '#fffdf5' : 'white',
-            })}
-            onClick={() => setSelectedType('yotpo')}
-          >
-            <WidgetIconBox widgetType="yotpo" size="lg" />
-            <Text>Yotpo Metric</Text>
-          </Flex>
+        <Flex flex={1} justify="center" gap={{ base: 'md', sm: 'lg' }} align="center" direction={{ base: 'column', sm: 'row' }}>
+          {OPTIONS.map((item: { value: 'identities' | 'iterable' | 'yotpo'; label: string }) => {
+            return (
+              <Flex
+                flex={1}
+                direction="column"
+                p="lg"
+                style={(theme: any) => ({
+                  border:
+                    selectedType === item.value
+                      ? `2px solid ${theme?.colors?.green?.[10] || '#288364'}`
+                      : `2px solid ${theme?.colors?.gray?.[3] || '#e0e0e0'}`,
+                  cursor: 'pointer',
+                  '&:hover': {
+                    borderColor: theme?.colors?.green?.[6] || '#55c49b',
+                  },
+                  borderRadius: '5px',
+                  width: '100%',
+                  maxWidth: { base: '100%', sm: '200px' },
+                  textAlign: 'center',
+                  background: selectedType === item.value ? '#f9fcf9' : 'white',
+                })}
+                onClick={() => setSelectedType(item.value)}
+              >
+                <WidgetIconBox widgetType={item.value} size="lg" />
+                <div className="text-[14px]">{item.label}</div>
+              </Flex>
+            );
+          })}
         </Flex>
       </Box>
 
-      <Flex align="center" justify="center" gap="md">
-        <Button className="flex-grow" variant="outline" onClick={onClose}>
-          Cancel
+      <Flex flex={1} justify="center" gap={{ base: 'xs', sm: 'md' }} px={{ base: 'md', sm: 'xl' }} w="100%" direction={{ base: 'column', xs: 'row' }}>
+        <Button className="flex-grow" bg="#fafaf6" variant="default"  onClick={handleClose}>
+          <div className="font-darker-grotesque font-semibold text-[18px]">Cancel</div>
         </Button>
         <Button
-        className="flex-grow"
+          className="flex-grow"
+          bg={theme?.colors?.myColor?.[10] || '#288364'}
           onClick={() => selectedType && onWidgetTypeSelect(selectedType)}
           disabled={!selectedType}
         >
-          Next
+          <div className="font-darker-grotesque font-semibold text-[18px] text-white">Next</div>
         </Button>
       </Flex>
     </Modal>

@@ -13,6 +13,7 @@ import { MetricWidget } from './MetricWidget';
 import { AddMetricModal } from './AddMetricModal';
 import { ConfigureWidgetModal } from './ConfigureWidgetModal';
 import { WidgetIconBox } from './WidgetIconBox';
+import { theme } from '@/theme';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -48,6 +49,8 @@ export function DashboardGrid({ initialWidgets = [] }: DashboardGridProps) {
   const [selectedWidgetType, setSelectedWidgetType] = useState<'identities' | 'iterable' | 'yotpo' | null>(null);
   const [newWidgetTitle, setNewWidgetTitle] = useState('');
   const [newWidgetDescription, setNewWidgetDescription] = useState('');
+  const [editingWidgetId, setEditingWidgetId] = useState<string | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   const viewType = useSelector(selectViewType);
   const isAdmin = viewType === VIEW_TYPE.ADMIN;
 
@@ -96,10 +99,33 @@ export function DashboardGrid({ initialWidgets = [] }: DashboardGridProps) {
     setLayouts(allLayouts);
   };
 
-  const handleWidgetEdit = (id: string, title: string, description: string) => {
-    setWidgets(
-      widgets.map((widget) => (widget.id === id ? { ...widget, title, description } : widget))
-    );
+  const handleWidgetEdit = (id: string) => {
+    const widgetToEdit = widgets.find(widget => widget.id === id);
+    if (widgetToEdit) {
+      setEditingWidgetId(id);
+      setIsEditMode(true);
+      setSelectedWidgetType(widgetToEdit.type);
+      setNewWidgetTitle(widgetToEdit.title);
+      setNewWidgetDescription(widgetToEdit.description);
+      setIsConfigModalOpen(true);
+    }
+  };
+
+  const handleWidgetDelete = (id: string) => {
+    // Remove the widget from the widgets array
+    const newWidgets = widgets.filter(widget => widget.id !== id);
+    setWidgets(newWidgets);
+    
+    // Remove the layout for the deleted widget
+    const newLayouts = { ...layouts };
+    Object.keys(newLayouts).forEach(breakpoint => {
+      if (newLayouts[breakpoint]) {
+        newLayouts[breakpoint] = newLayouts[breakpoint].filter(
+          (layout: LayoutItem) => layout.i !== id
+        );
+      }
+    });
+    setLayouts(newLayouts);
   };
 
   const handleAddWidget = () => {
@@ -128,45 +154,59 @@ export function DashboardGrid({ initialWidgets = [] }: DashboardGridProps) {
     }
   };
 
-  const handleSaveNewWidget = () => {
+  const handleSaveWidget = () => {
     if (!selectedWidgetType || !newWidgetTitle) {
       return;
     }
 
-    const newWidget: Widget = {
-      id: `widget-${Date.now()}`,
-      title: newWidgetTitle,
-      description: newWidgetDescription,
-      type: selectedWidgetType as 'identities' | 'iterable' | 'yotpo',
-      value: 0, // Default value
-    };
+    if (isEditMode && editingWidgetId) {
+      // Update existing widget
+      setWidgets(
+        widgets.map((widget) => 
+          widget.id === editingWidgetId ? 
+          { ...widget, title: newWidgetTitle, description: newWidgetDescription } : 
+          widget
+        )
+      );
+    } else {
+      // Create new widget
+      const newWidget: Widget = {
+        id: `widget-${Date.now()}`,
+        title: newWidgetTitle,
+        description: newWidgetDescription,
+        type: selectedWidgetType as 'identities' | 'iterable' | 'yotpo',
+        value: 0, // Default value
+      };
 
-    const newWidgets = [...widgets, newWidget];
-    setWidgets(newWidgets);
+      const newWidgets = [...widgets, newWidget];
+      setWidgets(newWidgets);
 
-    // Add layout for the new widget
-    const newLayouts = { ...layouts };
-    const lgLayout = newLayouts.lg || [];
+      // Add layout for the new widget
+      const newLayouts = { ...layouts };
+      const lgLayout = newLayouts.lg || [];
 
-    // Calculate position for the new widget
-    const newLayoutItem: LayoutItem = {
-      i: newWidget.id,
-      x: (lgLayout.length % 3) * 4,
-      y: Math.floor(lgLayout.length / 3) * 4,
-      w: 4,
-      h: 4,
-      minW: 2,
-      minH: 2,
-    };
+      // Calculate position for the new widget
+      const newLayoutItem: LayoutItem = {
+        i: newWidget.id,
+        x: (lgLayout.length % 3) * 4,
+        y: Math.floor(lgLayout.length / 3) * 4,
+        w: 4,
+        h: 4,
+        minW: 2,
+        minH: 2,
+      };
 
-    newLayouts.lg = [...lgLayout, newLayoutItem];
-    setLayouts(newLayouts);
+      newLayouts.lg = [...lgLayout, newLayoutItem];
+      setLayouts(newLayouts);
+    }
 
     // Reset form
     setIsConfigModalOpen(false);
     setSelectedWidgetType(null);
     setNewWidgetTitle('');
     setNewWidgetDescription('');
+    setEditingWidgetId(null);
+    setIsEditMode(false);
   };
 
   // Render widget based on type
@@ -201,6 +241,7 @@ export function DashboardGrid({ initialWidgets = [] }: DashboardGridProps) {
         value={widget.value}
         icon={icon}
         onEdit={handleWidgetEdit}
+        onDelete={handleWidgetDelete}
       />
     );
   };
@@ -208,8 +249,8 @@ export function DashboardGrid({ initialWidgets = [] }: DashboardGridProps) {
   return (
     <Box p="md">
       {isAdmin && (
-        <Button leftSection={<IconPlus size={16} />} onClick={handleAddWidget} mb="md">
-          Add Metric
+        <Button mb="sm" bg={theme.colors?.myColor?.[10] || '#288364'} leftSection={<IconPlus size={16} />} onClick={handleAddWidget}>
+          <div className="font-darker-grotesque font-bold text-[18px] text-white">Add Metric</div>
         </Button>
       )}
 
@@ -223,6 +264,7 @@ export function DashboardGrid({ initialWidgets = [] }: DashboardGridProps) {
         isDraggable={isAdmin}
         isResizable={isAdmin}
         draggableHandle=".drag-handle"
+        draggableCancel=".no-drag"
       >
         {widgets.map((widget) => (
           <div key={widget.id} className="widget-container">
@@ -246,17 +288,30 @@ export function DashboardGrid({ initialWidgets = [] }: DashboardGridProps) {
       {/* Configure Widget Modal */}
       <ConfigureWidgetModal
         opened={isConfigModalOpen}
-        onClose={() => setIsConfigModalOpen(false)}
-        onBack={() => {
+        onClose={() => {
           setIsConfigModalOpen(false);
-          setIsAddModalOpen(true);
+          setEditingWidgetId(null);
+          setIsEditMode(false);
+          setNewWidgetTitle('');
+          setNewWidgetDescription('');
         }}
-        onSave={handleSaveNewWidget}
+        onBack={() => {
+          if (isEditMode) {
+            setIsConfigModalOpen(false);
+            setEditingWidgetId(null);
+            setIsEditMode(false);
+          } else {
+            setIsConfigModalOpen(false);
+            setIsAddModalOpen(true);
+          }
+        }}
+        onSave={handleSaveWidget}
         selectedWidgetType={selectedWidgetType}
         newWidgetTitle={newWidgetTitle}
         newWidgetDescription={newWidgetDescription}
         onTitleChange={(value) => setNewWidgetTitle(value)}
         onDescriptionChange={(value) => setNewWidgetDescription(value)}
+        isEditMode={isEditMode}
       />
     </Box>
   );
