@@ -47,7 +47,8 @@ export function ConfigureWidgetModal({
     styles={{
       header: {
         backgroundColor: colorScheme === 'dark' ? '#1A1B1E' : '#fafaf6',
-        borderBottom: colorScheme === 'dark' ? '1px solid #373A40' : '1px solid #e0e0e0'
+        minHeight: 'unset',
+        padding: '1rem 1rem 0 1rem',
       },
       body: {
         width: getModalWidth(),

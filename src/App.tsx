@@ -9,6 +9,7 @@ import { theme } from './theme';
 import { store } from './store';
 import { Notifications } from '@mantine/notifications';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { Analytics } from "@vercel/analytics/react"
 
 export default function App() {
 
@@ -23,6 +24,7 @@ export default function App() {
           </ThemeProvider>
         </MantineProvider>
       </Provider>
+      <Analytics />
     </>
   );
 }
