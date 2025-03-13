@@ -6,7 +6,6 @@ import {
   Container,
   Flex,
   Image,
-  Loader,
   LoadingOverlay,
   Paper,
   PasswordInput,
@@ -209,7 +208,7 @@ export function AuthPage() {
   };
 
   return (
-    <Flex flex={1} h="100vh" align="center" justify="center" bg="#EAEBEA" pos="relative">
+    <Flex flex={1} h="100vh" align="center" justify="center" bg={colorScheme === 'dark' ? '#1A1B1E' : '#EAEBEA'} pos="relative">
       <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
       <Container w={420} my={40}>
         <Flex justify="center" mb="md">
@@ -218,12 +217,12 @@ export function AuthPage() {
             w="200"
           />
         </Flex>
-        <Paper radius="md" p="xl" withBorder shadow="md">
-          <div className="text-center font-darker-grotesque font-semibold text-[rgb(43,43,43)] text-[28px] mb-3">
+        <Paper radius="md" p="xl" withBorder shadow="md" bg={colorScheme === 'dark' ? '#25262B' : 'white'} style={{ borderColor: colorScheme === 'dark' ? '#373A40' : '#e0e0e0' }}>
+          <div className={`text-center font-darker-grotesque font-semibold ${colorScheme === 'dark' ? 'text-[#C1C2C5]' : 'text-[rgb(43,43,43)]'} text-[28px] mb-3`}>
             Welcome back!
           </div>
 
-          <div className="text-center font-inter text-[14px] text-[rgb(43,43,43)] mb-5">
+          <div className={`text-center font-inter text-[14px] ${colorScheme === 'dark' ? 'text-[#909296]' : 'text-[rgb(43,43,43)]'} mb-5`}>
             Log in to continue with OpenSend
           </div>
 
@@ -235,6 +234,13 @@ export function AuthPage() {
               required
               disabled={isLoading}
               leftSection={<IconMail />}
+              styles={{
+                input: {
+                  color: colorScheme === 'dark' ? '#C1C2C5' : undefined,
+                  backgroundColor: colorScheme === 'dark' ? '#1A1B1E' : undefined,
+                  borderColor: colorScheme === 'dark' ? '#373A40' : undefined,
+                }
+              }}
               {...form.getInputProps('email')}
             />
 
@@ -244,6 +250,13 @@ export function AuthPage() {
               required
               disabled={isLoading}
               leftSection={<IconLock />}
+              styles={{
+                input: {
+                  backgroundColor: colorScheme === 'dark' ? '#1A1B1E' : undefined,
+                  borderColor: colorScheme === 'dark' ? '#373A40' : undefined,
+                  color: colorScheme === 'dark' ? '#C1C2C5' : undefined
+                }
+              }}
               {...form.getInputProps('password')}
             />
             <Flex direction="column" gap={3} mb="md">
@@ -252,8 +265,7 @@ export function AuthPage() {
                 type="submit"
                 loading={isLoading}
                 disabled={!form.isValid()}
-                color="#298566"
-                // color={colorScheme === 'dark' ? '#298566' : theme.colors.green[6]}
+                color={theme?.colors?.myColor?.[10] || '#298566'}
               >
                 <div className="font-semibold text-[16px] font-darker-grotesque">Login</div>
               </Button>
@@ -263,6 +275,12 @@ export function AuthPage() {
                 fullWidth
                 type="button"
                 onClick={() => navigate('/auth')}
+                styles={{
+                  root: {
+                    backgroundColor: colorScheme === 'dark' ? '#25262B' : undefined,
+                    borderColor: colorScheme === 'dark' ? '#373A40' : undefined,
+                  }
+                }}
               >
                 <div className="font-semibold text-[16px] font-darker-grotesque">
                   Forgot Your Password?
@@ -274,7 +292,7 @@ export function AuthPage() {
         <Flex
           mt="sm"
           gap="5"
-          className="items-center justify-center text-[10px] text-[rgb(130, 130, 130)] font-inter"
+          className={`items-center justify-center text-[10px] ${colorScheme === 'dark' ? 'text-[#909296]' : 'text-[rgb(130, 130, 130)]'} font-inter`}
         >
           <div>© 2025 Opensend Inc. All rights reserved</div>
           <div>|</div>

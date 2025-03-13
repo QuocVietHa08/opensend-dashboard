@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { IconLogout, IconMoon, IconSun, IconUser, IconX } from '@tabler/icons-react';
+import { IconLogout, IconMoon, IconSun, IconUser } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
 import {
@@ -26,7 +26,6 @@ export function AppLayout() {
   const theme = useMantineTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [, setUserMenuOpened] = useState(false);
   const { toggleColorScheme, colorScheme } = useTheme();
   const [drawerOpened, { open: openDrawer, close: closeDrawer }] = useDisclosure(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -48,14 +47,11 @@ export function AppLayout() {
     navigate('/auth');
   };
 
-  // User profile menu component to reuse in both navbar and drawer
   const UserProfileMenu = () => (
     <Menu
       width={260}
       position="top-end"
       transitionProps={{ transition: 'pop-top-right' }}
-      onClose={() => setUserMenuOpened(false)}
-      onOpen={() => setUserMenuOpened(true)}
       withinPortal
     >
       <Menu.Target>
@@ -112,12 +108,10 @@ export function AppLayout() {
     </Menu>
   );
 
-  // Drawer content - doesn't use AppShell components
   const DrawerContent = () => (
     <Flex direction="column" h="100%" justify="space-between">
       <Box>
         {/* Navigation items can be added here */}
-        hello
       </Box>
 
       <Box>
@@ -126,11 +120,9 @@ export function AppLayout() {
     </Flex>
   );
 
-  // Navbar content - uses AppShell.Section
   const NavbarContent = () => (
     <>
       <AppShell.Section grow>
-        {/* Logo at the top */}
         <Box mb="xl">
           <Flex align="center" justify="center" direction="column" gap="md">
             <Image
@@ -140,11 +132,9 @@ export function AppLayout() {
           </Flex>
         </Box>
 
-        {/* Navigation items can be added here */}
       </AppShell.Section>
 
       <AppShell.Section>
-        {/* User info at the bottom */}
         <UserProfileMenu />
       </AppShell.Section>
     </>

@@ -1,4 +1,4 @@
-import { Paper, Text, ActionIcon, Flex, Box, Group } from '@mantine/core';
+import { Paper, Text, ActionIcon, Flex, Group } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { useSelector } from 'react-redux';
 import { selectViewType } from '../../store/slices/authSlice';
@@ -45,10 +45,11 @@ export function MetricWidget({
       radius="md"
       shadow="sm"
       withBorder
+      className="overflow-hidden"
       style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
     >
-      <Flex justify="space-between" align="center" mb="xs">
-        <div className="text-[18px] font-darker-grotesque font-bold">{title}</div>
+      <Flex justify="space-between" align="center" mb="xs" className="overflow-hidden">
+        <div className="text-[18px] font-darker-grotesque font-bold whitespace-nowrap text-ellipsis">{title}</div>
         {isAdmin && (
           <Group gap={5} className="no-drag">
             <ActionIcon
@@ -81,7 +82,7 @@ export function MetricWidget({
         )}
       </Flex>
 
-      <Text size="sm" color="dimmed" mb="md">
+      <Text size="sm" className="overflow-hidden text-ellipsis whitespace-nowrap">
         {description}
       </Text>
     </Paper>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Button, Flex, Modal, Text } from '@mantine/core';
+import { Box, Button, Flex, Modal, Text, useMantineColorScheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { theme } from '@/theme';
 import { WidgetIconBox } from './WidgetIconBox';
@@ -22,6 +22,7 @@ export function AddMetricModal({ opened, onClose, onWidgetTypeSelect }: AddMetri
   );
   const isMobile = useMediaQuery('(max-width: 576px)');
   const isTablet = useMediaQuery('(min-width: 577px) and (max-width: 992px)');
+  const { colorScheme } = useMantineColorScheme();
 
   // Get modal width based on screen size
   const getModalWidth = () => {
@@ -46,11 +47,11 @@ export function AddMetricModal({ opened, onClose, onWidgetTypeSelect }: AddMetri
       size="xxl"
       styles={{
         header: {
-          backgroundColor: '#fafaf6',
+          backgroundColor: colorScheme === 'dark' ? '#1A1B1E' : '#fafaf6',
         },
         body: {
           width: getModalWidth(),
-          backgroundColor: '#fafaf6',
+          backgroundColor: colorScheme === 'dark' ? '#1A1B1E' : '#fafaf6',
         },
         inner: {
           padding: '16px',
@@ -79,7 +80,7 @@ export function AddMetricModal({ opened, onClose, onWidgetTypeSelect }: AddMetri
                   border:
                     selectedType === item.value
                       ? `2px solid ${theme?.colors?.green?.[10] || '#288364'}`
-                      : `2px solid ${theme?.colors?.gray?.[3] || '#e0e0e0'}`,
+                      : `2px solid ${colorScheme === 'dark' ? theme?.colors?.dark?.[4] || '#373A40' : theme?.colors?.gray?.[3] || '#e0e0e0'}`,
                   cursor: 'pointer',
                   '&:hover': {
                     borderColor: theme?.colors?.green?.[6] || '#55c49b',
@@ -88,7 +89,9 @@ export function AddMetricModal({ opened, onClose, onWidgetTypeSelect }: AddMetri
                   width: '100%',
                   maxWidth: { base: '100%', sm: '200px' },
                   textAlign: 'center',
-                  background: selectedType === item.value ? '#f9fcf9' : 'white',
+                  background: selectedType === item.value 
+                    ? colorScheme === 'dark' ? '#1E2A24' : '#f9fcf9'
+                    : colorScheme === 'dark' ? '#25262B' : 'white',
                 })}
                 onClick={() => setSelectedType(item.value)}
               >
@@ -101,7 +104,7 @@ export function AddMetricModal({ opened, onClose, onWidgetTypeSelect }: AddMetri
       </Box>
 
       <Flex flex={1} justify="center" gap={{ base: 'xs', sm: 'md' }} px={{ base: 'md', sm: 'xl' }} w="100%" direction={{ base: 'column', xs: 'row' }}>
-        <Button className="flex-grow" bg="#fafaf6" variant="default"  onClick={handleClose}>
+        <Button className="flex-grow" variant="default" onClick={handleClose}>
           <div className="font-darker-grotesque font-semibold text-[18px]">Cancel</div>
         </Button>
         <Button
