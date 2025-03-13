@@ -62,7 +62,7 @@ export function MetricWidget({
               color={theme.colors?.myColor?.[9] || '#288364'}
               className="no-drag"
             >
-              <IconEdit size={16} />
+              <IconEdit size={16} color={theme.primaryColor?.[9] || '#288364'} />
             </ActionIcon>
             {onDelete && (
               <ActionIcon

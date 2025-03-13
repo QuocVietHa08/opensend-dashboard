@@ -93,6 +93,7 @@ export function AuthPage() {
       email: isEmail('Please enter a valid email'),
       password: hasLength({ min: 1 }, 'Password is required'),
     },
+    validateInputOnChange: ['email'],
   });
 
   useEffect(() => {
@@ -234,43 +235,26 @@ export function AuthPage() {
                   color: colorScheme === 'dark' ? '#C1C2C5' : undefined,
                   backgroundColor: colorScheme === 'dark' ? '#1A1B1E' : undefined,
                   borderColor: colorScheme === 'dark' ? '#373A40' : undefined,
-                  '&:focus': {
-                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
-                  },
-                  '&:active': {
-                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
-                  },
                 },
+                error: {
+                  fontSize: '12px',
+                  marginTop: '5px',
+                  color: theme.colors.red[6]
+                }
               }}
+              error={form.errors.email}
               {...form.getInputProps('email')}
             />
 
             <PasswordInput
               placeholder="Password"
-              className="input-login"
               required
               disabled={isLoading}
               leftSection={<IconLock />}
               styles={{
-                innerInput: {
-                  color: colorScheme === 'dark' ? '#C1C2C5' : undefined,
-                  '&:focus': {
-                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
-                  },
-                  '&:active': {
-                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
-                  },
-                },
                 input: {
                   backgroundColor: colorScheme === 'dark' ? '#1A1B1E' : undefined,
                   borderColor: colorScheme === 'dark' ? '#373A40' : undefined,
-                  color: colorScheme === 'dark' ? '#C1C2C5' : undefined,
-                  '&:focus': {
-                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
-                  },
-                  '&:active': {
-                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
-                  },
                 },
               }}
               {...form.getInputProps('password')}

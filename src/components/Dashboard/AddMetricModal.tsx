@@ -103,7 +103,7 @@ export function AddMetricModal({ opened, onClose, onWidgetTypeSelect }: AddMetri
         </Flex>
       </Box>
 
-      <Flex flex={1} justify="center" gap={{ base: 'xs', sm: 'md' }} px={{ base: 'md', sm: 'xl' }} w="100%" direction={{ base: 'column', xs: 'row' }}>
+      <Flex flex={1} justify="center" gap={{ base: 'xs', sm: 'md' }} px={{ base: 'md', sm: 'xl' }} w="100%" direction={{ base: 'column-reverse', xs: 'row' }}>
         <Button className="flex-grow" variant="default" onClick={handleClose}>
           <div className="font-darker-grotesque font-semibold text-[18px]">Cancel</div>
         </Button>
