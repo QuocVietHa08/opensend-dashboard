@@ -56,3 +56,7 @@ body {
 .input-login input:active, .input-login input:focus, .input-login input:focus-within {
   border-color: #288364 !important;
 }
+
+.input-login textarea:active, .input-login textarea:focus, .input-login textarea:focus-within {
+  border-color: #288364 !important;
+}

@@ -101,39 +101,6 @@ export function AuthPage() {
     }
   }, [isAuthenticated, navigate]);
 
-  // useEffect(() => {
-  //   if (error) {
-  //     if ('data' in error) {
-  //       const errorData = error.data as any;
-  //       if (errorData?.message) {
-  //         // Check if the error is related to the email field
-  //         if (errorData.message.includes('email')) {
-  //           console.log('cehcking', errorData.message)
-  //           form.setFieldError('email', errorData.message);
-  //         } else {
-  //           notifications.show({
-  //             title: 'Login Failed',
-  //             message: errorData.message,
-  //             color: 'red',
-  //           });
-  //         }
-  //       } else {
-  //         notifications.show({
-  //           title: 'Login Failed',
-  //           message: 'An error occurred during login',
-  //           color: 'red',
-  //         });
-  //       }
-  //     } else {
-  //       notifications.show({
-  //         title: 'Login Failed',
-  //         message: 'Failed to connect to the server',
-  //         color: 'red',
-  //       });
-  //     }
-  //   }
-  // }, [error, form]);
-
   const handleFetchStoreInfo = async (
     storeId: string,
     accessToken: string,
@@ -152,7 +119,7 @@ export function AuthPage() {
         const storeInfo = await response.json();
         const onboardingStatus = storeInfo?.store?.onboarding_procedure?.onboarding_status;
         dispatch(setOnboardingStatus(onboardingStatus));
-        dispatch(setIsAuthenticated(true))
+        dispatch(setIsAuthenticated(true));
 
         // Only redirect after we have the onboarding status
         const targetRoute = onboardingStatus !== 'DONE' ? '/onboard' : '/dashboard';
@@ -171,30 +138,33 @@ export function AuthPage() {
   const handleSubmit = async (values: { email: string; password: string }) => {
     try {
       setIsLoading(true);
-      const result = await login(values).unwrap().then(async (res) => {
-        if (res.view.type === 'CLIENT' && res.accesses && res.accesses.length > 0) {
-        const storeId = res?.accesses[0].store_id;
-        const accessToken = res.tokens.accessToken;
-        const clientToken = res.tokens.clientToken;
-        await handleFetchStoreInfo(storeId, accessToken, clientToken);
-        }
-        return res;
-      }).catch((error) => {
-        const errorData = error.data as any;
-        if (errorData?.message) {
-          // Check if the error is related to the email field
-          if (errorData.message.includes('email')) {
-            form.setFieldError('email', errorData.message);
-          } else {
-            notifications.show({
-              title: 'Login Failed',
-              message: errorData.message,
-              color: 'red',
-            });
+      const result = await login(values)
+        .unwrap()
+        .then(async (res) => {
+          if (res.view.type === 'CLIENT' && res.accesses && res.accesses.length > 0) {
+            const storeId = res?.accesses[0].store_id;
+            const accessToken = res.tokens.accessToken;
+            const clientToken = res.tokens.clientToken;
+            await handleFetchStoreInfo(storeId, accessToken, clientToken);
           }
-        }
-        return error
-      })
+          return res;
+        })
+        .catch((error) => {
+          const errorData = error.data as any;
+          if (errorData?.message) {
+            // Check if the error is related to the email field
+            if (errorData.message.includes('email')) {
+              form.setFieldError('email', errorData.message);
+            } else {
+              notifications.show({
+                title: 'Login Failed',
+                message: errorData.message,
+                color: 'red',
+              });
+            }
+          }
+          return error;
+        });
       const updateCredentials = {
         user: result.user,
         accessToken: result.tokens.accessToken,
@@ -216,7 +186,14 @@ export function AuthPage() {
   };
 
   return (
-    <Flex flex={1} h="100vh" align="center" justify="center" bg={colorScheme === 'dark' ? '#1A1B1E' : '#EAEBEA'} pos="relative">
+    <Flex
+      flex={1}
+      h="100vh"
+      align="center"
+      justify="center"
+      bg={colorScheme === 'dark' ? '#1A1B1E' : '#EAEBEA'}
+      pos="relative"
+    >
       <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
       <Container w={420} my={40}>
         <Flex justify="center" mb="md">
@@ -225,12 +202,23 @@ export function AuthPage() {
             w="200"
           />
         </Flex>
-        <Paper radius="md" p="xl" withBorder shadow="md" bg={colorScheme === 'dark' ? '#25262B' : 'white'} style={{ borderColor: colorScheme === 'dark' ? '#373A40' : '#e0e0e0' }}>
-          <div className={`text-center font-darker-grotesque font-semibold ${colorScheme === 'dark' ? 'text-[#C1C2C5]' : 'text-[rgb(43,43,43)]'} text-[28px] mb-3`}>
+        <Paper
+          radius="md"
+          p="xl"
+          withBorder
+          shadow="md"
+          bg={colorScheme === 'dark' ? '#25262B' : 'white'}
+          style={{ borderColor: colorScheme === 'dark' ? '#373A40' : '#e0e0e0' }}
+        >
+          <div
+            className={`text-center font-darker-grotesque font-semibold ${colorScheme === 'dark' ? 'text-[#C1C2C5]' : 'text-[rgb(43,43,43)]'} text-[28px] mb-3`}
+          >
             Welcome back!
           </div>
 
-          <div className={`text-center font-inter text-[14px] ${colorScheme === 'dark' ? 'text-[#909296]' : 'text-[rgb(43,43,43)]'} mb-5`}>
+          <div
+            className={`text-center font-inter text-[14px] ${colorScheme === 'dark' ? 'text-[#909296]' : 'text-[rgb(43,43,43)]'} mb-5`}
+          >
             Log in to continue with OpenSend
           </div>
 
@@ -252,7 +240,7 @@ export function AuthPage() {
                   '&:active': {
                     borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
                   },
-                }
+                },
               }}
               {...form.getInputProps('email')}
             />
@@ -264,6 +252,15 @@ export function AuthPage() {
               disabled={isLoading}
               leftSection={<IconLock />}
               styles={{
+                innerInput: {
+                  color: colorScheme === 'dark' ? '#C1C2C5' : undefined,
+                  '&:focus': {
+                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
+                  },
+                  '&:active': {
+                    borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
+                  },
+                },
                 input: {
                   backgroundColor: colorScheme === 'dark' ? '#1A1B1E' : undefined,
                   borderColor: colorScheme === 'dark' ? '#373A40' : undefined,
@@ -274,7 +271,7 @@ export function AuthPage() {
                   '&:active': {
                     borderColor: colorScheme === 'dark' ? '#288364' : '#288364',
                   },
-                }
+                },
               }}
               {...form.getInputProps('password')}
             />
@@ -298,7 +295,7 @@ export function AuthPage() {
                   root: {
                     backgroundColor: colorScheme === 'dark' ? '#25262B' : undefined,
                     borderColor: colorScheme === 'dark' ? '#373A40' : undefined,
-                  }
+                  },
                 }}
               >
                 <div className="font-semibold text-[16px] font-darker-grotesque">

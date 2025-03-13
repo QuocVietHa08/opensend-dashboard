@@ -105,6 +105,7 @@ export function ConfigureWidgetModal({
             <TextInput
               label="Title"
               required
+              className='input-login'
               withAsterisk
               value={newWidgetTitle}
               onChange={(e) => onTitleChange(e.target.value)}
@@ -115,6 +116,7 @@ export function ConfigureWidgetModal({
               label="Description"
               required
               withAsterisk
+              className='input-login'
               resize="none"
               value={newWidgetDescription}
               onChange={(e) => onDescriptionChange(e.target.value)}

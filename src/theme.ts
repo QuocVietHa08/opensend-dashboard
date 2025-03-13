@@ -4,21 +4,20 @@ const generalProps = {
   defaultProps: {
     radius: 'sm',
   },
-}
+};
 
 const myColor: MantineColorsTuple = [
-  '#effaf7',
-  '#e0f2ec',
-  '#bce6d7',
-  '#95d9c1',
-  '#75ceae',
-  '#61c7a2',
-  '#55c49b',
-  '#46ac87',
-  '#3a9977',
-  '#298565'
+  '#E6F3EE',
+  '#C0E3D6',
+  '#9AD3BE',
+  '#74C3A6',
+  '#4EB38E',
+  '#288364',
+  '#206A50',
+  '#18503C',
+  '#103628',
+  '#081C14',
 ];
-
 
 export const componentTheme = {
   Modal: {
@@ -85,12 +84,12 @@ export const componentTheme = {
       },
     },
   },
-}
+};
 
 export const theme = createTheme({
   colors: {
-     myColor
+    myColor,
   },
-  components: componentTheme
-
+  primaryColor: 'myColor',
+  components: componentTheme,
 });
