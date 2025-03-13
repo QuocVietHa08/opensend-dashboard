@@ -86,8 +86,8 @@ export function AuthPage() {
 
   const form = useForm({
     initialValues: {
-      email: 'test+admin@yopmail.com',
-      password: '12345678',
+      email: '',
+      password: '',
     },
     validate: {
       email: isEmail('Please enter a valid email'),
